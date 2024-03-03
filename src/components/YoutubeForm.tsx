@@ -9,7 +9,8 @@ type FormValues = {
     socials : {
         twitter: string,
         facebook : string
-    }
+    };
+    phoneNumbers : string[]
 };
 
 
@@ -23,7 +24,8 @@ const YoutubeForm = () => {
             socials: { // nested Objects 
                 twitter:'',
                 facebook:''
-            }
+            },
+            phoneNumbers : ["",""] // Arrays in Forms
         },
 
     });
@@ -84,12 +86,46 @@ const YoutubeForm = () => {
 
                 <div className="formControl">
                     <label htmlFor="twitter">Twitter</label>
-                    <input type="text" id="twitter" {...register("socials.twitter")} />
+                    <input type="text" id="twitter" {...register("socials.twitter",{
+                        required: {
+                            value:true,
+                            message:'Enter the Twitter Handle'
+                        }
+                    })} />
+                       <p className="error">{errors?.socials?.twitter?.message}</p>
                 </div>
 
                 <div className="formControl">
                     <label htmlFor="facebook">FaceBook</label>
-                    <input type="text" id="facebook" {...register("socials.facebook")} />
+                    <input type="text" id="facebook" {...register("socials.facebook",{
+                        required: {
+                            value: true,
+                            message : 'Enter the Facebook handle'
+                        }
+                    })} />
+                       <p className="error">{errors?.socials?.facebook?.message}</p>
+                </div>
+
+                <div className="formControl">
+                    <label htmlFor="primary-phone">Primary PhoneNumber</label>
+                    <input type="text" id="primary-phone" {...register("phoneNumbers.0", {
+                        required : {
+                            value: true,
+                            message: "Primary Phone Number is required"
+                        }
+                    })} />
+                       <p className="error">{errors?.phoneNumbers?.[0]?.message}</p>
+                </div>
+
+                <div className="formControl">
+                    <label htmlFor="secondary-phone">Secondary PhoneNumber</label>
+                    <input type="text" id="secondary-phones" {...register("phoneNumbers.1", {
+                        required : {
+                            value : true,
+                            message: "Secondary Phone Number is Required"
+                        }
+                    })} />
+                       <p className="error">{errors?.phoneNumbers?.[1]?.message}</p>
                 </div>
 
                 <button>submit </button>
