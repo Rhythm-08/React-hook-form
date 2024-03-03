@@ -26,3 +26,13 @@ input[type="data"] {
   border-radius: 4px;
   margin-bottom: 20px;
 }
+
+.error { 
+  color: red;
+  font-size: 12px;
+  text-align: left;
+}
+
+.formControl {
+   margin-bottom: 20px;
+}
