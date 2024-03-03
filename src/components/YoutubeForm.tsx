@@ -36,8 +36,9 @@ const YoutubeForm = () => {
             dob: new Date()
         },
 
-    });
-    const { register, control, handleSubmit, formState, watch, getValues, setValue } = form;
+    }); 
+    // watch commented as useEffect is not being used
+    const { register, control, handleSubmit, formState, getValues, setValue } = form;
     const { errors, touchedFields, dirtyFields, isDirty } = formState;
     const { fields, append, remove } = useFieldArray({
         name: 'phNumbers',
