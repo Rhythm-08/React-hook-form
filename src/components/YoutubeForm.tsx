@@ -13,7 +13,9 @@ type FormValues = {
     phoneNumbers: string[],
     phNumbers: {
         number: string;
-    }[]
+    }[],
+    age: number,
+    dob: Date
 };
 
 
@@ -30,22 +32,45 @@ const YoutubeForm = () => {
             },
             phoneNumbers: ["", ""], // Arrays in Forms
             phNumbers: [{ number: '' }],
+            age: 0,
+            dob: new Date()
         },
 
     });
-    const { register, control, handleSubmit, formState } = form;
-    const { errors } = formState;
+    const { register, control, handleSubmit, formState, watch, getValues, setValue } = form;
+    const { errors, touchedFields, dirtyFields, isDirty } = formState;
     const { fields, append, remove } = useFieldArray({
         name: 'phNumbers',
         control
     })
+    console.log({touchedFields, dirtyFields, isDirty});  // isDirty tracks the state of whole form not single field
+    
 
     renderCount++;
 
     const onSubmit = (data: FormValues) => {
         console.log('Form Submitted', data);
-
     }
+
+    const handleGetValues = () => {
+        console.log("Get Values", getValues()); // Can be passed array of fields ['',''] or just single arg. getValues('')
+    }
+
+    const handleSetValues = () => {
+        setValue("username",'Rhythm',{
+            shouldValidate:true,
+            shouldDirty:true,
+            shouldTouch:true
+        });
+    }
+    
+    // useEffect(() => {
+    //    const subscription = watch((value) => {
+    //         console.log(value);
+    //     })
+    //     return () => subscription.unsubscribe();
+    // }
+    // ,[watch]);
 
     return (
         <div className="youtube_form">
@@ -157,7 +182,30 @@ const YoutubeForm = () => {
                     </div>
                 </div>
 
+                <div className="formControl">
+                    <label htmlFor="age">Age</label>
+                    <input type="number" id="age" {...register("age", {
+                        valueAsNumber:true,
+                        required: { value: true, message: "age is Required" }
+                    })} />
+                    <p className="error">{errors?.age?.message}</p>
+                </div>
+
+                
+                <div className="formControl">
+                    <label htmlFor="dob">Date Of Birth</label>
+                    <input type="date" id="dob" {...register("dob", {
+                        valueAsDate:true,
+                        required: { value: true, message: "dob is Required" }
+                    })} />
+                    <p className="error">{errors?.dob?.message}</p>
+                </div>
+
                 <button>submit </button>
+                <button type="button" onClick={handleGetValues}>Get Values </button>
+                <button type="button" onClick={handleSetValues}>Set Values </button>
+
+
 
             </form>
             <DevTool control={control} />
