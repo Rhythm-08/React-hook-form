@@ -5,13 +5,28 @@ let renderCount = 0;
 type FormValues = {
     username: string,
     email: string,
-    channel: string
+    channel: string,
+    socials : {
+        twitter: string,
+        facebook : string
+    }
 };
 
 
 
 const YoutubeForm = () => {
-    const form = useForm<FormValues>();
+    const form = useForm<FormValues>({
+        defaultValues: {
+            username: '',
+            email: '',
+            channel: '',
+            socials: { // nested Objects 
+                twitter:'',
+                facebook:''
+            }
+        },
+
+    });
     const { register, control, handleSubmit, formState } = form;
     const { errors } = formState;
     renderCount++;
@@ -65,6 +80,16 @@ const YoutubeForm = () => {
                         required: { value: true, message: "Channel is Required" }
                     })} />
                     <p className="error">{errors?.channel?.message}</p>
+                </div>
+
+                <div className="formControl">
+                    <label htmlFor="twitter">Twitter</label>
+                    <input type="text" id="twitter" {...register("socials.twitter")} />
+                </div>
+
+                <div className="formControl">
+                    <label htmlFor="facebook">FaceBook</label>
+                    <input type="text" id="facebook" {...register("socials.facebook")} />
                 </div>
 
                 <button>submit </button>
