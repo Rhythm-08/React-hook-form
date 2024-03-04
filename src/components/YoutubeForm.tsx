@@ -1,5 +1,6 @@
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, FieldErrors } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
+import { useEffect } from "react";
 
 let renderCount = 0;
 type FormValues = {
@@ -35,16 +36,17 @@ const YoutubeForm = () => {
             age: 0,
             dob: new Date()
         },
+        mode: "onTouched"
 
     }); 
     // watch commented as useEffect is not being used
-    const { register, control, handleSubmit, formState, getValues, setValue } = form;
-    const { errors, touchedFields, dirtyFields, isDirty } = formState;
+    const { register, control, handleSubmit, formState, watch, getValues, setValue, reset, trigger } = form;
+    const { errors, touchedFields, dirtyFields, isDirty, isValid, isSubmitting,isSubmitted, isSubmitSuccessful,submitCount } = formState;
     const { fields, append, remove } = useFieldArray({
         name: 'phNumbers',
         control
     })
-    console.log({touchedFields, dirtyFields, isDirty});  // isDirty tracks the state of whole form not single field
+    console.log({touchedFields, dirtyFields, isDirty, isValid, isSubmitting, isSubmitted, isSubmitSuccessful, submitCount});  // isDirty tracks the state of whole form not single field
     
 
     renderCount++;
@@ -64,7 +66,17 @@ const YoutubeForm = () => {
             shouldTouch:true
         });
     }
+
+const onError = (error: FieldErrors<FormValues>) => {
+    console.log(error);
+}
     
+    useEffect(() => {
+        if(isSubmitSuccessful){
+            reset();
+        }
+    },[isSubmitSuccessful,reset])
+
     // useEffect(() => {
     //    const subscription = watch((value) => {
     //         console.log(value);
@@ -76,7 +88,7 @@ const YoutubeForm = () => {
     return (
         <div className="youtube_form">
             <h1>YouTube Form {renderCount / 2}</h1>
-            <form onSubmit={handleSubmit(onSubmit)} noValidate >
+            <form onSubmit={handleSubmit(onSubmit,onError)} noValidate >
                 <div className="formControl">
                     <label htmlFor="username">Username</label>
                     <input type="text" id="username" {...register("username", {
@@ -105,6 +117,11 @@ const YoutubeForm = () => {
                             },
                             notBlackListed: (fieldValue) => {
                                 return !fieldValue.endsWith('badDomain.com') || 'This domain is not supported';
+                            },
+                            emailAvailable: async (fieldValue) => {
+                                const response = fetch(`https://jsonplaceholder.typicode.com/users?email=${fieldValue}`);
+                                const data = await (await response).json();
+                                return data?.length == 0 || "Email already Exists"
                             }
                         }
                     })} />
@@ -125,7 +142,8 @@ const YoutubeForm = () => {
                         required: {
                             value: true,
                             message: 'Enter the Twitter Handle'
-                        }
+                        },
+                        disabled:watch("channel") === ""
                     })} />
                     <p className="error">{errors?.socials?.twitter?.message}</p>
                 </div>
@@ -202,7 +220,11 @@ const YoutubeForm = () => {
                     <p className="error">{errors?.dob?.message}</p>
                 </div>
 
-                <button>submit </button>
+                <button disabled={!isDirty || isSubmitting}>submit </button>
+                <button type="button" onClick={() => reset()}>reset </button>
+                <button type="button" onClick={() => trigger("channel")}>Validate </button>
+
+
                 <button type="button" onClick={handleGetValues}>Get Values </button>
                 <button type="button" onClick={handleSetValues}>Set Values </button>
 
